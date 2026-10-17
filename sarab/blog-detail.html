@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+   <meta charset="UTF-8" />
+   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <title>Blog Nyarab | Detail Artikel</title>
+   <meta name="description" content="Baca artikel terbaru seputar makanan, trend kuliner, dan tips sehat dari Nyarab." />
+   <link rel="preconnect" href="https://fonts.googleapis.com" />
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800;900&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+   <link rel="stylesheet" href="css/all.min.css" />
+   <link rel="stylesheet" href="css/bootstrap.min.css" />
+   <link rel="stylesheet" href="css/aos.css" />
+   <link rel="stylesheet" href="css/style.css" />
+   <style>
+      .reading-progress {
+         position: fixed;
+         inset: 0 auto auto 0;
+         width: 100%;
+         height: 3px;
+         z-index: 1001;
+         background: transparent;
+      }
+      .reading-progress span {
+         display: block;
+         width: 0;
+         height: 100%;
+         background: var(--primary);
+         transition: width 0.12s linear;
+      }
+      .article-search {
+         position: fixed;
+         z-index: 1000;
+         top: 105px;
+         left: 0;
+         width: 100%;
+         padding: 18px 0;
+         background: #fff;
+         box-shadow: 0 14px 24px rgba(0, 0, 0, 0.12);
+      }
+      .article-search[hidden] { display: none; }
+      .article-search-inner { max-width: 720px; margin: auto; padding: 0 16px; }
+      .article-search input {
+         width: 100%;
+         padding: 12px 14px;
+         border: 1px solid #e6e1dc;
+         border-radius: 6px;
+         outline: none;
+      }
+      .article-search input:focus { border-color: var(--primary); }
+      .article-search-results { display: grid; gap: 4px; margin-top: 8px; }
+      .article-search-results a, .article-search-results p {
+         padding: 9px 12px;
+         margin: 0;
+         color: var(--dark);
+         font-size: 0.88rem;
+      }
+      .article-search-results a:hover { background: var(--cream); color: var(--primary); }
+      .blog-detail-wrap {
+         padding: 56px 0 76px;
+         background: linear-gradient(180deg, var(--cream) 0, #fff 420px);
+      }
+      .article-intro { max-width: 940px; margin: 0 auto 30px; }
+      .article-breadcrumb {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 9px;
+         align-items: center;
+         color: #8a8178;
+         font-size: 0.78rem;
+         margin-bottom: 22px;
+      }
+      .article-breadcrumb a { color: var(--primary); font-weight: 600; }
+      .article-breadcrumb i { font-size: 0.6rem; }
+      .blog-detail-tag {
+         display: inline-flex;
+         align-items: center;
+         padding: 6px 10px;
+         background: #fff0e7;
+         color: #bb321d;
+         border-radius: 3px;
+         font-size: 0.68rem;
+         font-weight: 700;
+         text-transform: uppercase;
+      }
+      .article-intro h1 {
+         max-width: 850px;
+         margin: 14px 0 18px;
+         font-size: 3.15rem;
+         line-height: 1.12;
+         font-weight: 800;
+         color: var(--dark);
+      }
+      .blog-detail-meta {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 10px 22px;
+         color: #766f68;
+         font-size: 0.78rem;
+      }
+      .blog-detail-meta i { color: var(--primary); margin-right: 6px; }
+      .blog-detail-card { max-width: 1120px; margin: 0 auto; }
+      .blog-detail-image {
+         display: block;
+         width: 100%;
+         aspect-ratio: 2.15 / 1;
+         object-fit: cover;
+         background: #eee;
+      }
+      .article-tools {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         gap: 14px;
+         padding: 14px 0;
+         border-bottom: 1px solid #e9e4df;
+      }
+      .article-tools-group { display: flex; align-items: center; gap: 8px; }
+      .article-tools-label { margin-right: 4px; color: #777; font-size: 0.74rem; }
+      .article-tool {
+         width: 36px;
+         height: 36px;
+         display: inline-flex;
+         align-items: center;
+         justify-content: center;
+         border: 1px solid #e4ded7;
+         border-radius: 50%;
+         background: #fff;
+         color: #45413d;
+         cursor: pointer;
+         transition: 0.2s ease;
+      }
+      .article-tool:hover, .article-tool[aria-pressed="true"] {
+         border-color: var(--primary);
+         color: var(--primary);
+      }
+      .article-tool-text { width: auto; padding: 0 13px; border-radius: 18px; font-size: 0.75rem; }
+      .article-feedback { min-height: 18px; color: var(--green); font-size: 0.74rem; }
+      .article-reading-layout {
+         display: grid;
+         grid-template-columns: minmax(0, 760px) 230px;
+         gap: 56px;
+         justify-content: center;
+         padding-top: 34px;
+      }
+      .blog-detail-content {
+         color: #4d4944;
+         font-size: 1.02rem;
+         line-height: 1.9;
+         transition: font-size 0.15s ease;
+      }
+      .blog-detail-content p { margin: 0 0 22px; }
+      .blog-detail-content p:first-child::first-letter {
+         float: left;
+         padding: 5px 8px 0 0;
+         color: var(--primary);
+         font-family: "Playfair Display", serif;
+         font-size: 3.5rem;
+         font-weight: 700;
+         line-height: 0.85;
+      }
+      .article-aside { align-self: start; position: sticky; top: 112px; }
+      .article-aside-title {
+         padding-bottom: 10px;
+         border-bottom: 2px solid var(--primary);
+         color: var(--dark);
+         font-family: "Poppins", sans-serif;
+         font-size: 0.8rem;
+         font-weight: 700;
+      }
+      .article-aside p { color: #777; font-size: 0.78rem; line-height: 1.7; }
+      .article-aside a {
+         display: flex;
+         gap: 9px;
+         align-items: flex-start;
+         padding: 10px 0;
+         border-bottom: 1px solid #eee8e2;
+         color: #57514b;
+         font-size: 0.78rem;
+      }
+      .article-aside a i { margin-top: 4px; color: var(--primary); font-size: 0.65rem; }
+      .article-aside a:hover { color: var(--primary); }
+      .blog-back { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+      .related-articles { margin: 62px auto 0; max-width: 1120px; }
+      .related-articles h2 { font-size: 1.65rem; font-weight: 800; }
+      .related-articles .row { margin-top: 16px; }
+      @media (max-width: 991px) {
+         .article-reading-layout { grid-template-columns: minmax(0, 760px); gap: 22px; }
+         .article-aside { position: static; order: -1; padding: 16px; background: #fffaf5; }
+         .article-aside-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
+      }
+      @media (max-width: 767px) {
+         .blog-detail-wrap { padding: 34px 0 54px; }
+         .article-intro { margin-bottom: 20px; }
+         .article-intro h1 { font-size: 2rem; }
+         .blog-detail-image { aspect-ratio: 1.35 / 1; }
+         .article-tools { align-items: flex-start; flex-direction: column; }
+         .article-reading-layout { padding-top: 22px; }
+         .article-aside-links { grid-template-columns: 1fr; }
+         .blog-detail-content { font-size: 0.98rem; }
+      }
+   </style>
+</head>
+<body>
+   <div class="reading-progress" aria-hidden="true"><span id="readingProgress"></span></div>
+   <div id="topbar">
+      <div class="container">
+         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="top-contact d-flex flex-wrap">
+               <span><i class="fas fa-phone-alt"></i>+6285855244990</span>
+               <span><i class="fas fa-envelope"></i>nyarabfood@gmail.com</span>
+               <span><i class="fas fa-map-marker-alt"></i>Jl. Ngaglik Gg 4, Malang</span>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+               <span class="ttag"><i class="fas fa-fire me-1"></i>Gratis Antar Hari Ini!</span>
+               <div class="tsoc">
+                  <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                  <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                  <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-tiktok"></i></a>
+                  <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+
+   <nav class="navbar navbar-expand-lg" id="nav">
+      <div class="container">
+         <a class="navbar-brand" href="index.html#hero" aria-label="Nyarab, kembali ke beranda">
+            <div class="blogo">
+               <div class="bico"><i class="fas fa-utensils"></i></div>
+               <div>
+                  <div class="bname">Nyar<span>ab</span></div>
+                  <div class="bsub">Fast Food &amp; Restoran</div>
+               </div>
+            </div>
+         </a>
+         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu" aria-label="Buka navigasi">
+            <i class="fas fa-bars" style="color:var(--primary);font-size:1.35rem;"></i>
+         </button>
+         <div class="collapse navbar-collapse" id="navmenu">
+            <ul class="navbar-nav mx-auto">
+               <li class="nav-item"><a class="nav-link" href="index.html#hero">Beranda</a></li>
+               <li class="nav-item"><a class="nav-link" href="index.html#about">Tentang</a></li>
+               <li class="nav-item"><a class="nav-link" href="index.html#menu">Menu</a></li>
+               <li class="nav-item"><a class="nav-link" href="index.html#chefs">Koki</a></li>
+               <li class="nav-item"><a class="nav-link" href="index.html#reservation">Reservasi</a></li>
+               <li class="nav-item"><a class="nav-link" href="index.html#contact-section">Kontak</a></li>
+               <li class="nav-item"><a class="nav-link" href="index.html#testimonials">Ulasan</a></li>
+            </ul>
+            <div class="d-flex align-items-center gap-1">
+               <button id="navSearchBtn" type="button" title="Cari artikel" aria-label="Cari artikel"><i class="fas fa-search"></i></button>
+               <a href="index.html#menu" class="nav-link nav-cta" aria-label="Lihat menu Nyarab"><i class="fas fa-shopping-bag me-1"></i>Pesan Makanan</a>
+            </div>
+         </div>
+      </div>
+   </nav>
+   <div class="article-search" id="articleSearch" hidden>
+      <div class="article-search-inner">
+         <label class="visually-hidden" for="articleSearchInput">Cari artikel</label>
+         <input id="articleSearchInput" type="search" placeholder="Cari artikel Nyarab..." autocomplete="off" />
+         <div class="article-search-results" id="articleSearchResults" aria-live="polite"></div>
+      </div>
+   </div>
+
+   <section class="blog-detail-wrap">
+      <div class="container">
+         <a href="index.html#blog" class="btn-red blog-back"><i class="fas fa-arrow-left"></i>Kembali ke Blog</a>
+
+         <header class="article-intro">
+            <nav class="article-breadcrumb" aria-label="Breadcrumb">
+               <a href="index.html#hero">Beranda</a><i class="fas fa-chevron-right"></i>
+               <a href="index.html#blog">Blog</a><i class="fas fa-chevron-right"></i>
+               <span id="breadcrumbTitle">Artikel</span>
+            </nav>
+            <span id="detail-tag" class="blog-detail-tag"></span>
+            <h1 id="detail-title"></h1>
+            <div class="blog-detail-meta">
+               <span><i class="fas fa-user"></i><span id="detail-author"></span></span>
+               <span><i class="fas fa-calendar-alt"></i><span id="detail-date"></span></span>
+               <span><i class="fas fa-comments"></i><span id="detail-comments"></span></span>
+               <span><i class="far fa-clock"></i><span id="detail-reading-time"></span></span>
+            </div>
+         </header>
+
+         <article class="blog-detail-card">
+            <img id="detail-image" class="blog-detail-image" src="" alt="Article image" />
+            <div class="article-tools" aria-label="Kontrol artikel">
+               <div class="article-tools-group">
+                  <span class="article-tools-label">Ukuran teks</span>
+                  <button class="article-tool" id="fontDecrease" type="button" aria-label="Perkecil teks" title="Perkecil teks"><i class="fas fa-minus"></i></button>
+                  <button class="article-tool" id="fontIncrease" type="button" aria-label="Perbesar teks" title="Perbesar teks"><i class="fas fa-plus"></i></button>
+               </div>
+               <div class="article-tools-group">
+                  <button class="article-tool article-tool-text" id="bookmarkButton" type="button" aria-pressed="false"><i class="far fa-bookmark me-2"></i>Simpan</button>
+                  <button class="article-tool article-tool-text" id="shareButton" type="button"><i class="fas fa-share-alt me-2"></i>Bagikan</button>
+               </div>
+            </div>
+            <div class="article-feedback" id="articleFeedback" role="status" aria-live="polite"></div>
+            <div class="article-reading-layout">
+               <div id="detail-content" class="blog-detail-content"></div>
+               <aside class="article-aside" aria-label="Isi artikel">
+                  <div class="article-aside-title">ISI ARTIKEL</div>
+                  <div class="article-aside-links" id="articleContents"></div>
+               </aside>
+            </div>
+         </article>
+
+         <div class="related-articles">
+            <h2>Artikel Lainnya</h2>
+            <div class="row g-4" id="related-list"></div>
+         </div>
+      </div>
+   </section>
+
+   <footer>
+      <div class="container">
+         <div class="row g-5">
+            <div class="col-lg-4">
+               <div class="fnm">Nyar<span>ab</span></div>
+               <p class="fdesc">Kami menghadirkan cita rasa terbaik dari seluruh dunia dalam pengalaman yang cepat, ramah, dan terjangkau. Setiap hidangan dibuat dengan cinta.</p>
+               <div class="fsoc">
+                  <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                  <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                  <a href="https://x.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+                  <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+                  <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer"><i class="fab fa-tiktok"></i></a>
+               </div>
+            </div>
+            <div class="col-sm-6 col-lg-2">
+               <div class="ftit">Tautan Cepat</div>
+               <ul class="flinks ps-0">
+                  <li><a href="index.html#hero"><i class="fas fa-chevron-right"></i>Beranda</a></li>
+                  <li><a href="index.html#about"><i class="fas fa-chevron-right"></i>Tentang</a></li>
+                  <li><a href="index.html#menu"><i class="fas fa-chevron-right"></i>Menu</a></li>
+                  <li><a href="index.html#reservation"><i class="fas fa-chevron-right"></i>Reservasi</a></li>
+                  <li><a href="index.html#contact-section"><i class="fas fa-chevron-right"></i>Kontak</a></li>
+               </ul>
+            </div>
+            <div class="col-sm-6 col-lg-2">
+               <div class="ftit">Menu Kami</div>
+               <ul class="flinks ps-0">
+                  <li><a href="index.html#menu"><i class="fas fa-chevron-right"></i>Burger Malang</a></li>
+                  <li><a href="index.html#menu"><i class="fas fa-chevron-right"></i>Pizza Malang</a></li>
+                  <li><a href="index.html#menu"><i class="fas fa-chevron-right"></i>Ayam Goreng Malang</a></li>
+                  <li><a href="index.html#menu"><i class="fas fa-chevron-right"></i>Wrap &amp; Roll</a></li>
+                  <li><a href="index.html#menu"><i class="fas fa-chevron-right"></i>Pasta Malang</a></li>
+               </ul>
+            </div>
+            <div class="col-lg-4">
+               <div class="ftit">Hubungi Kami</div>
+               <div class="fci">
+                  <div class="fciico"><i class="fas fa-map-marker-alt"></i></div>
+                  <div class="fciinfo"><strong>Alamat</strong>Jl. Ngaglik Gg 4, Malang</div>
+               </div>
+               <div class="fci">
+                  <div class="fciico"><i class="fas fa-phone-alt"></i></div>
+                  <div class="fciinfo"><strong>Telepon</strong>+6285855244990</div>
+               </div>
+               <div class="fci">
+                  <div class="fciico"><i class="fas fa-envelope"></i></div>
+                  <div class="fciinfo"><strong>Email</strong>nyarabfood@gmail.com</div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="fbot">
+         <div class="container">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+               <p>&copy; 2026 <span>Nyarab Restaurant</span>. Hak Cipta Dilindungi.</p>
+               <div><a href="#">Kebijakan Privasi</a><a href="#">Syarat</a><a href="#">Cookie</a></div>
+            </div>
+         </div>
+      </div>
+   </footer>
+
+   <script src="js/jquery-3.7.1.min.js"></script>
+   <script src="js/bootstrap.bundle.min.js"></script>
+   <script src="js/aos.js"></script>
+   <script>
+      const posts = [
+         {
+            id: 1,
+            tag: 'Makanan &amp; Kesehatan',
+            title: 'Fast Food Sehat: Mitos atau Kenyataan yang Menakjubkan?',
+            author: 'James Writer',
+            date: '14 Maret 2026',
+            comments: '24 Komentar',
+            image: 'img/blog/1.jpg',
+            sections: [{ before: 1, title: 'Memilih menu dengan lebih bijak' }, { before: 3, title: 'Menemukan keseimbangan' }],
+            content: [
+               'Fast food sering dikaitkan dengan makanan yang tidak sehat, padahal tren kuliner modern justru membuktikan bahwa pilihan cepat dan bergizi bisa hadir dalam satu paket. Banyak restoran sekarang mulai mengutamakan bahan berkualitas, porsi seimbang, dan metode masak yang lebih sehat.',
+               'Di Nyarab, kami percaya bahwa fast food tidak harus identik dengan rasa yang kurang sehat. Dengan kombinasi daging berkualitas, sayuran segar, saus rendah gula, dan teknik pengolahan yang tepat, setiap menu tetap kaya rasa tanpa mengorbankan kualitas nutrisi.',
+               'Kunci utamanya adalah keseimbangan. Saat memilih fast food, perhatikan bahan utama, kandungan gula dan lemak, serta cara penyajiannya. Dengan pendekatan yang bijak, fast food bisa menjadi pilihan praktis untuk hari yang sibuk tanpa merasa bersalah.',
+               'Saat Anda memilih restoran seperti Nyarab, fokuslah pada rasa dan keseimbangan. Fast food sehat bukan lagi mitos, tetapi pilihan yang bisa dinikmati kapan pun.'
+            ]
+         },
+         {
+            id: 2,
+            tag: 'Ilmu Makanan',
+            title: 'Apakah Fast Food Semakin Sehat? Inilah yang Kami Temukan',
+            author: 'Sarah Grain',
+            date: '28 Februari 2026',
+            comments: '18 Komentar',
+            image: 'img/blog/2.jpg',
+            sections: [{ before: 1, title: 'Perubahan dalam industri kuliner' }, { before: 3, title: 'Pilihan yang lebih seimbang' }],
+            content: [
+               'Industri makanan cepat saji terus berkembang, dan banyak brand mulai memperkenalkan inovasi yang memprioritaskan kualitas dan keseimbangan nutrisi. Hal ini membuat banyak orang mulai melihat fast food dengan sudut pandang yang lebih terbuka.',
+               'Perubahan ini bukan hanya soal bahan baku, tetapi juga proses produksi. Restoran modern menggunakan bahan segar, meminimalkan penggunaan bahan pengawet, dan merancang menu yang lebih terukur untuk kebutuhan konsumen masa kini.',
+               'Dengan begitu, fast food bukanlah simbol dari makanan yang tidak sehat sepenuhnya. Yang paling penting adalah memilih menu dengan porsi tepat, bahan yang jelas, serta cara penyajian yang bukan sekadar menggugah rasa, tetapi juga menjaga kualitas tubuh.',
+               'Jadi, jawabannya adalah ya: fast food bisa semakin sehat jika dibuat dengan standard dan komitmen kualitas yang benar.'
+            ]
+         },
+         {
+            id: 3,
+            tag: 'Resep',
+            title: 'Resep Kacang Polong Panas yang Kreatif dan Renyah di Rumah',
+            author: 'Chef Marcus',
+            date: '5 Januari 2026',
+            comments: '32 Komentar',
+            image: 'img/blog/3.jpg',
+            sections: [{ before: 1, title: 'Cara membuat camilan lebih menarik' }, { before: 3, title: 'Camilan renyah untuk dicoba' }],
+            content: [
+               'Kacang polong atau peas sudah lama dikenal sebagai bahan serbaguna, dan kini semakin populer sebagai camilan ringan yang menggabungkan rasa gurih, segar, dan renyah. Ide ini sangat cocok untuk Anda yang ingin mencoba camilan homemade yang lebih sehat dan kreatif.',
+               'Kreativitas datang dari bagaimana Anda mengolahnya. Setelah dipanggang atau digoreng dengan sedikit bumbu, kacang polong bisa menjadi camilan yang nikmat tanpa rasa bosan. Anda juga bisa menambahkan campuran rempah seperti paprika, garam laut, atau sedikit bubuk cabai.',
+               'Konsep ini tidak hanya menyenangkan di rumah, tetapi juga bisa menginspirasi menu restoran. Banyak tempat kuliner modern sekarang mengadaptasi ide sederhana ini menjadi snack premium yang tetap ringan namun memuaskan.',
+               'Dengan rasa yang renyah dan cara penyajian yang fleksibel, kacang polong panas bisa menjadi pilihan camilan baru yang sehat, simpel, dan penuh kreativitas.'
+            ]
+         }
+      ];
+
+      const params = new URLSearchParams(window.location.search);
+      const articleId = Number(params.get('id')) || 1;
+      const current = posts.find(item => item.id === articleId) || posts[0];
+
+      document.getElementById('detail-image').src = current.image;
+      document.getElementById('detail-image').alt = current.title;
+      document.getElementById('detail-tag').innerHTML = current.tag;
+      document.getElementById('detail-title').textContent = current.title;
+      document.getElementById('breadcrumbTitle').textContent = current.title;
+      document.getElementById('detail-author').textContent = current.author;
+      document.getElementById('detail-date').textContent = current.date;
+      document.getElementById('detail-comments').textContent = current.comments;
+      document.title = `${current.title} | Blog Nyarab`;
+
+      const contentEl = document.getElementById('detail-content');
+      contentEl.innerHTML = current.content.map((paragraph, index) => {
+         const section = current.sections.find(item => item.before === index);
+         const heading = section ? `<h2 id="article-section-${index}">${section.title}</h2>` : '';
+         return `${heading}<p>${paragraph}</p>`;
+      }).join('');
+
+      const wordCount = current.content.join(' ').trim().split(/\s+/).length;
+      document.getElementById('detail-reading-time').textContent = `${Math.max(1, Math.ceil(wordCount / 200))} menit baca`;
+      document.getElementById('articleContents').innerHTML = [...contentEl.querySelectorAll('h2')].map(heading => `
+         <a href="#${heading.id}"><i class="fas fa-chevron-right"></i>${heading.textContent}</a>
+      `).join('');
+
+      const articleFeedback = document.getElementById('articleFeedback');
+      const bookmarkButton = document.getElementById('bookmarkButton');
+      const bookmarkKey = `nyarab-bookmark-${current.id}`;
+      const updateBookmark = isSaved => {
+         bookmarkButton.setAttribute('aria-pressed', String(isSaved));
+         bookmarkButton.innerHTML = `<i class="${isSaved ? 'fas' : 'far'} fa-bookmark me-2"></i>${isSaved ? 'Tersimpan' : 'Simpan'}`;
+      };
+      updateBookmark(localStorage.getItem(bookmarkKey) === 'true');
+      bookmarkButton.addEventListener('click', () => {
+         const isSaved = bookmarkButton.getAttribute('aria-pressed') !== 'true';
+         localStorage.setItem(bookmarkKey, String(isSaved));
+         updateBookmark(isSaved);
+         articleFeedback.textContent = isSaved ? 'Artikel tersimpan di perangkat ini.' : 'Artikel dihapus dari daftar tersimpan.';
+      });
+
+      let articleFontSize = 1.02;
+      document.getElementById('fontDecrease').addEventListener('click', () => {
+         articleFontSize = Math.max(0.88, articleFontSize - 0.08);
+         contentEl.style.fontSize = `${articleFontSize}rem`;
+      });
+      document.getElementById('fontIncrease').addEventListener('click', () => {
+         articleFontSize = Math.min(1.34, articleFontSize + 0.08);
+         contentEl.style.fontSize = `${articleFontSize}rem`;
+      });
+
+      document.getElementById('shareButton').addEventListener('click', async () => {
+         const shareData = { title: current.title, text: `Baca artikel dari Nyarab: ${current.title}`, url: window.location.href };
+         try {
+            if (navigator.share) {
+               await navigator.share(shareData);
+            } else {
+               await navigator.clipboard.writeText(window.location.href);
+               articleFeedback.textContent = 'Tautan artikel berhasil disalin.';
+            }
+         } catch (error) {
+            if (error.name !== 'AbortError') articleFeedback.textContent = 'Tautan belum dapat dibagikan dari browser ini.';
+         }
+      });
+
+      const progressBar = document.getElementById('readingProgress');
+      const updateReadingProgress = () => {
+         const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+         const progress = scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0;
+         progressBar.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+      };
+      window.addEventListener('scroll', updateReadingProgress, { passive: true });
+      window.addEventListener('resize', updateReadingProgress);
+      updateReadingProgress();
+
+      const searchPanel = document.getElementById('articleSearch');
+      const searchInput = document.getElementById('articleSearchInput');
+      const searchResults = document.getElementById('articleSearchResults');
+      const renderSearchResults = query => {
+         const matches = posts.filter(post => `${post.title} ${post.tag} ${post.author}`.toLowerCase().includes(query.toLowerCase()));
+         searchResults.innerHTML = matches.length
+            ? matches.map(post => `<a href="blog-detail.html?id=${post.id}">${post.title}</a>`).join('')
+            : '<p>Tidak ada artikel yang cocok.</p>';
+      };
+      document.getElementById('navSearchBtn').addEventListener('click', async () => {
+         searchPanel.hidden = !searchPanel.hidden;
+         if (!searchPanel.hidden) {
+            const navMenu = document.getElementById('navmenu');
+            if (navMenu.classList.contains('show')) {
+               const menuClosed = new Promise(resolve => navMenu.addEventListener('hidden.bs.collapse', resolve, { once: true }));
+               bootstrap.Collapse.getOrCreateInstance(navMenu).hide();
+               await menuClosed;
+            }
+            searchPanel.style.top = `${Math.max(0, document.getElementById('nav').getBoundingClientRect().bottom)}px`;
+            renderSearchResults('');
+            searchInput.focus();
+         }
+      });
+      searchInput.addEventListener('input', event => renderSearchResults(event.target.value.trim()));
+      document.addEventListener('keydown', event => {
+         if (event.key === 'Escape') searchPanel.hidden = true;
+      });
+
+      const relatedList = document.getElementById('related-list');
+      const related = posts.filter(item => item.id !== current.id).slice(0, 2);
+      relatedList.innerHTML = related.map(item => `
+         <div class="col-md-6">
+            <div class="blcard">
+               <div class="blimg">
+                  <img src="${item.image}" alt="${item.title}" />
+                  <div class="bldatebdg"><span class="bd">${item.date.split(' ')[0]}</span><span class="bm">${item.date.split(' ')[1].slice(0,3)}</span></div>
+               </div>
+               <div class="blbody">
+                  <div class="bltag">${item.tag}</div>
+                  <div class="bltit"><a href="blog-detail.html?id=${item.id}">${item.title}</a></div>
+                  <div class="blmeta"><span><i class="fas fa-user"></i>${item.author}</span><span><i class="fas fa-comment"></i>${item.comments}</span></div>
+                  <a href="blog-detail.html?id=${item.id}" class="blmore">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+               </div>
+            </div>
+         </div>
+      `).join('');
+   </script>
+</body>
+</html>
